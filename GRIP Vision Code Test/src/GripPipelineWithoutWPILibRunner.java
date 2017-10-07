@@ -1,7 +1,11 @@
 import java.lang.reflect.Field;
 
 import org.opencv.core.Core;
-
+/**
+ * This class is the main class used to load the necessary libraries and initiate the vision code program.
+ * @author Albert Lin
+ *
+ */
 public class GripPipelineWithoutWPILibRunner {
 	public static void main(String[] args) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException, InterruptedException {
 		//load the dll...?
