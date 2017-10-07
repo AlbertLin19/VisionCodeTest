@@ -18,7 +18,11 @@ import org.opencv.imgproc.Imgproc;
 import org.opencv.imgproc.Moments;
 import org.opencv.videoio.VideoCapture;
 import org.opencv.videoio.Videoio;
-
+/**
+ * This class starts the vision tracking stream and pipeline.
+ * @author Albert Lin
+ *
+ */
 public class GripPipelineWithoutWPILibVideoCapture {
 	
 	//create the VideoCapture object

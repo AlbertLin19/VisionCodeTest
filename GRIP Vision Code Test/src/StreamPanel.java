@@ -3,7 +3,11 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
 import javax.swing.JPanel;
-
+/**
+ * This class creates the stream panel that holds the video capture stream.
+ * @author Albert Lin
+ *
+ */
 public class StreamPanel extends JPanel{
 	/**
 	 * 
