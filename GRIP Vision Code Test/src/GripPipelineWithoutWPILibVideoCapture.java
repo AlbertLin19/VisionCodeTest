@@ -57,6 +57,9 @@ public class GripPipelineWithoutWPILibVideoCapture {
 	//create custom StreamPanel object to use for content pane...?
 	StreamPanel streamPanel = new StreamPanel();
 	
+	//boolean for controlling when to execute servo vision track code
+	boolean doServoTrack = false;
+	
 	public void videoCaptureTest() {
 		
 		//setting up the window
@@ -67,6 +70,8 @@ public class GripPipelineWithoutWPILibVideoCapture {
 		
 		//open the camera with user input
 		Scanner tempScanner = new Scanner(System.in);
+		System.out.println("Do you want to control a servo?\nY/N: ");
+		doServoTrack = tempScanner.next().equalsIgnoreCase("Y");
 		System.out.println("Type the index of the video device (int) and hit enter: ");
 		int videoIndex = tempScanner.nextInt();
 		this.capture.open(videoIndex);
@@ -133,6 +138,7 @@ public class GripPipelineWithoutWPILibVideoCapture {
 		} else {
 			System.out.println("uh oh, camera not found or camera cannot be opened");
 		}
+		
 	}
 	
 	//reads the image next in the capture stream
