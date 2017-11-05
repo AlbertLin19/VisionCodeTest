@@ -124,8 +124,16 @@ public class GripPipelineWithoutWPILibVideoCapture {
 						System.out.println("center x= " + center.x);
 						System.out.println("center y= " + center.y);
 						showResult(frame, (int) center.x, (int) center.y);
+						if (doServoTrack) {
+							System.out.println("Updating Servo...");
+							ServoControl.updateServo(center.x, widthIn);
+						}
 					}
 					System.out.println("frame done");
+					/*if (doServoTrack) {
+						System.out.println("Updating Servo...");
+						ServoControl.updateServo(center.x, widthIn);
+					}*/
 				}
 			};
 			System.out.println("Please type in the fps that you want the thread to run at (int) and hit enter: ");
@@ -135,6 +143,19 @@ public class GripPipelineWithoutWPILibVideoCapture {
 			System.out.println("This thread will run at " + 1/(millisecondWaitTime/1000.0) + " fps.");
 			this.timer = Executors.newSingleThreadScheduledExecutor();
 			this.timer.scheduleAtFixedRate(frameGrabber, 0, millisecondWaitTime, TimeUnit.MILLISECONDS);
+			
+			/*if (doServoTrack) {
+				while (true) {
+					ServoControl.updateServo(center.x, widthIn);
+					try {
+						Thread.sleep(2000);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}*/
+			
 		} else {
 			System.out.println("uh oh, camera not found or camera cannot be opened");
 		}

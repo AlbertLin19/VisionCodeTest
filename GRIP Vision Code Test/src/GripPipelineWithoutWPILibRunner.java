@@ -67,7 +67,7 @@ public class GripPipelineWithoutWPILibRunner {
 		//Start the video processing method
 		stream.videoCaptureTest();
 		
-		if (stream.doServoTrack == true) {
+		if (stream.doServoTrack) {
 			System.out.println("Testing the ServoControl class...");
 			ServoControl.testingGpio();
 		}
