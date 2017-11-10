@@ -1,7 +1,18 @@
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.HashMap;
+
 import org.opencv.core.*;
+import org.opencv.core.Core.*;
+import org.opencv.features2d.FeatureDetector;
+import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.*;
+import org.opencv.objdetect.*;
 
 /**
 * GripPipelineWithoutWPILibTape class.
@@ -30,9 +41,9 @@ public class GripPipelineWithoutWPILibTape {
 
 		// Step HSV_Threshold0:
 		Mat hsvThresholdInput = blurOutput;
-		double[] hsvThresholdHue = {0.0, 180.0};
-		double[] hsvThresholdSaturation = {0.0, 83.11433447098975};
-		double[] hsvThresholdValue = {227.02338129496405, 255.0};
+		double[] hsvThresholdHue = {40.46762589928058, 115.49488054607507};
+		double[] hsvThresholdSaturation = {103.19244604316548, 255.0};
+		double[] hsvThresholdValue = {162.81474820143885, 255.0};
 		hsvThreshold(hsvThresholdInput, hsvThresholdHue, hsvThresholdSaturation, hsvThresholdValue, hsvThresholdOutput);
 
 		// Step Find_Contours0:
