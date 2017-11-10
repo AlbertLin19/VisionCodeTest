@@ -1,4 +1,5 @@
 import java.lang.reflect.Field;
+import java.util.Scanner;
 
 import org.opencv.core.Core;
 /**
@@ -65,10 +66,18 @@ public class GripPipelineWithoutWPILibRunner {
 				new GripPipelineWithoutWPILibVideoCapture();
 		
 		//Start the video processing method
-		stream.videoCaptureTest();
+		Scanner tempScanner = new Scanner(System.in);
+		System.out.println("Do you want to control a servo?\nY/N: ");
+		if (tempScanner.next().equalsIgnoreCase("Y")) {
+			System.out.println("Testing and initializing servo with the ServoControl class...");
+			ServoControl.testingGpio();
+			stream.videoCaptureTestWithServo();
+		} else {
+				stream.videoCaptureTest();
+			}
 		
 		if (stream.doServoTrack) {
-			System.out.println("Testing the ServoControl class...");
+			System.out.println("Testing and initializing servo with the ServoControl class...");
 			ServoControl.testingGpio();
 		}
 	}

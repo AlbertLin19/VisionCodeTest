@@ -14,12 +14,12 @@ public class ServoControl {
 	    com.pi4j.wiringpi.Gpio.pwmSetClock(192);
 	    com.pi4j.wiringpi.Gpio.pwmSetRange(2000);
 	        System.out.println("Set Servo");
-	        com.pi4j.wiringpi.Gpio.pwmWrite(n, 100);
+	        com.pi4j.wiringpi.Gpio.pwmWrite(n, 140);
 
 	        Thread.sleep(1000);
 
 	        System.out.println("Change servo state...");
-	        com.pi4j.wiringpi.Gpio.pwmWrite(n, 200);
+	        com.pi4j.wiringpi.Gpio.pwmWrite(n, 160);
 
 	        Thread.sleep(1000);
 	        
@@ -30,34 +30,45 @@ public class ServoControl {
 	public static void updateServo(double x, double widthIn) {
 		double offset = widthIn/2-x;
 
-		if (offset < widthIn/10.0) {
-			System.out.println("Setting to 170");
-			com.pi4j.wiringpi.Gpio.pwmWrite(n, 170);
+		if (offset < -1*widthIn/10.0) {
+			System.out.println("Setting to 160");
+			com.pi4j.wiringpi.Gpio.pwmWrite(n, 160);
 			try {
-				Thread.sleep(250);
+				Thread.sleep((long) (offset*-1/widthIn*2750));
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			System.out.println("Stopping Servo...");
 			com.pi4j.wiringpi.Gpio.pwmWrite(n, 150);
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		} else if (offset > widthIn/10.0) {
-			System.out.println("Setting to 130");
-			com.pi4j.wiringpi.Gpio.pwmWrite(n, 130);
+			System.out.println("Setting to 140");
+			com.pi4j.wiringpi.Gpio.pwmWrite(n, 140);
 			try {
-				Thread.sleep(250);
+				Thread.sleep((long) (offset/widthIn*2750));
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			System.out.println("Stopping Servo...");
 			com.pi4j.wiringpi.Gpio.pwmWrite(n, 150);
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		} else {
 			System.out.println("Setting to 150");
 			com.pi4j.wiringpi.Gpio.pwmWrite(n, 150);
 		}
 		
-		return;
 	}
 	
 
