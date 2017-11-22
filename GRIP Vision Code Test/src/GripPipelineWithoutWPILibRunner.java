@@ -67,18 +67,33 @@ public class GripPipelineWithoutWPILibRunner {
 		
 		//Start the video processing method
 		Scanner tempScanner = new Scanner(System.in);
+		
 		System.out.println("Do you want to control a servo?\nY/N: ");
-		if (tempScanner.next().equalsIgnoreCase("Y")) {
+		stream.setDoServoTrack(tempScanner.next().equalsIgnoreCase("Y"));
+		System.out.println("Do you want to run in headless mode?\nY/N: ");
+		stream.setIsHeadless(tempScanner.next().equalsIgnoreCase("Y"));
+		System.out.println("Type the index of the video device (int) and hit enter: ");
+		stream.setDeviceIndex(tempScanner.nextInt());
+		System.out.println("Enter the FPS (int) that you want, then hit enter: ");
+		stream.setFps(tempScanner.nextInt());
+		System.out.println("Enter the width (int) that you want, then hit enter: ");
+		stream.setWidth(tempScanner.nextInt());
+		System.out.println("Enter the height (int) that you want, then hit enter: ");
+		stream.setHeight(tempScanner.nextInt());
+		tempScanner.close();
+		if (stream.doServoTrack) {
 			System.out.println("Testing and initializing servo with the ServoControl class...");
 			ServoControl.testingGpio();
 			stream.videoCaptureTestWithServo();
 		} else {
-				stream.videoCaptureTest();
+			System.out.println("Not running with servo...");
+			stream.videoCaptureTestWithServo();
 			}
 		
-		if (stream.doServoTrack) {
+		/*if (stream.doServoTrack) {
 			System.out.println("Testing and initializing servo with the ServoControl class...");
 			ServoControl.testingGpio();
-		}
+		}*/
+		
 	}
 }

@@ -8,5 +8,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="C:/Users/Albert/pi4j-1.2-SNAPSHOT/lib/pi4j-core.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Albert/wpilib/java/current/lib/NetworkTables.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

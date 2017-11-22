@@ -2,11 +2,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Scanner;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import org.opencv.core.Mat;
@@ -46,7 +42,7 @@ public class GripPipelineWithoutWPILibVideoCapture {
 	JFrame windowViewer;
 	//create custom StreamPanel object to use for content pane...?
 	StreamPanel streamPanel;
-	boolean doServoTrack;
+	boolean doServoTrack, isHeadless;
 	int deviceIndex, fps, width, height;
 	
 	public GripPipelineWithoutWPILibVideoCapture() {
@@ -57,6 +53,7 @@ public class GripPipelineWithoutWPILibVideoCapture {
 		windowViewer = new JFrame("Viewer");
 		streamPanel = new StreamPanel();
 		doServoTrack = false;
+		isHeadless = true;
 		deviceIndex = 0;
 		fps = 1;
 		width = 1;
@@ -66,6 +63,9 @@ public class GripPipelineWithoutWPILibVideoCapture {
 	
 	public void setDoServoTrack(boolean doServoTrackIn) {
 		doServoTrack = doServoTrackIn;
+	}
+	public void setIsHeadless(boolean isHeadlessIn) {
+		isHeadless = isHeadlessIn;
 	}
 	public void setDeviceIndex(int deviceIndexIn) {
 		deviceIndex = deviceIndexIn;
@@ -80,139 +80,26 @@ public class GripPipelineWithoutWPILibVideoCapture {
 		height = heightIn;
 	}
 
-	public void videoCaptureTest() {
-		
-		//setting up the window
-		windowViewer.setVisible(true);
-		windowViewer.setSize(1080, 720);
-		windowViewer.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		windowViewer.setContentPane(streamPanel);
-		
-		//open the camera with user input
-		Scanner tempScanner = new Scanner(System.in);
-		System.out.println("Do you want to control a servo?\nY/N: ");
-		doServoTrack = tempScanner.next().equalsIgnoreCase("Y");
-		System.out.println("Type the index of the video device (int) and hit enter: ");
-		int videoIndex = tempScanner.nextInt();
-		this.capture.open(videoIndex);
-		System.out.println("Enter the FPS (int) that you want, then hit enter: ");
-		int fpsIn = tempScanner.nextInt();
-		capture.set(Videoio.CAP_PROP_FPS, fpsIn);
-		System.out.println("Enter the width (int) that you want, then hit enter: ");
-		int widthIn = tempScanner.nextInt();
-		capture.set(Videoio.CAP_PROP_FRAME_WIDTH, widthIn);
-		System.out.println("Enter the height (int) that you want, then hit enter: ");
-		int heightIn = tempScanner.nextInt();
-		capture.set(Videoio.CAP_PROP_FRAME_HEIGHT, heightIn);
-		System.out.println("FPS: " + capture.get(Videoio.CAP_PROP_FPS));
-		System.out.println("Width: " + capture.get(Videoio.CAP_PROP_FRAME_WIDTH));
-		System.out.println("Height: " + capture.get(Videoio.CAP_PROP_FRAME_HEIGHT));
-		if (this.capture.isOpened()) {
-			Runnable frameGrabber = new Runnable() {
-				public void run() {
-					
-					//assign frame (type Mat) with the next image in the capture stream
-					frame = getFrame();
-					
-					//send the frame to pipeline to process
-					pipeline.process(frame);
-					
-					showResult(frame);
-					
-					//give contourArray (ArrayList of MatOfPoint)
-					//the output of the contour report
-					contourArray = pipeline.filterContoursOutput();
-					
-					//give momentsArray (ArrayList of Moments)
-					//a size that is the number of the points
-					//in the contourArray (ArrayList of MatOfPoint)
-					momentsArray = new ArrayList<Moments>(contourArray.size());
-					
-					for (int i = 0; i < contourArray.size(); i++) {
-						
-						//take the MatOfPoint at contourArray's index of i
-						//and change it to a moment by method Imgproc.moments()
-						//and assign it to the index i of the momentsArray
-						momentsArray.add(i, Imgproc.moments(contourArray.get(i)));
-						
-						//assign moments (Moment) with the moment that
-						//is at the index i of the momentsArray (the one just previously copied)
-						moments = momentsArray.get(i);
-						
-						//get the point values and print the coordinates out
-						center = new Point(moments.get_m10() / moments.get_m00(), moments.get_m01() / moments.get_m00());
-						System.out.println("center x= " + center.x);
-						System.out.println("center y= " + center.y);
-						showResult(frame, (int) center.x, (int) center.y);
-						if (doServoTrack) {
-							System.out.println("Updating Servo...");
-							ServoControl.updateServo(center.x, widthIn);
-						}
-					}
-					System.out.println("frame done");
-					/*if (doServoTrack) {
-						System.out.println("Updating Servo...");
-						ServoControl.updateServo(center.x, widthIn);
-					}*/
-				}
-			};
-			System.out.println("Please type in the fps that you want the thread to run at (int) and hit enter: ");
-			int millisecondWaitTime = (1000/tempScanner.nextInt());
-			tempScanner.close();
-			System.out.println("The thread wait time is: " + millisecondWaitTime);
-			System.out.println("This thread will run at " + 1/(millisecondWaitTime/1000.0) + " fps.");
-			this.timer = Executors.newSingleThreadScheduledExecutor();
-			this.timer.scheduleAtFixedRate(frameGrabber, 0, millisecondWaitTime, TimeUnit.MILLISECONDS);
-			
-			/*if (doServoTrack) {
-				while (true) {
-					ServoControl.updateServo(center.x, widthIn);
-					try {
-						Thread.sleep(2000);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-			}*/
-			
-		} else {
-			System.out.println("uh oh, camera not found or camera cannot be opened");
-		}
-		
-	}
 	
-public void videoCaptureTestWithServo() {
+	public void videoCaptureTestWithServo() {
 		
-		//setting up the window
-		windowViewer.setVisible(true);
-		windowViewer.setSize(1080, 720);
-		windowViewer.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		windowViewer.setContentPane(streamPanel);
-		
-		//open the camera with user input
-		Scanner tempScanner = new Scanner(System.in);
-		doServoTrack = true;
-		System.out.println("Type the index of the video device (int) and hit enter: ");
-		int videoIndex = tempScanner.nextInt();
-		this.capture.open(videoIndex);
-		System.out.println("Enter the FPS (int) that you want, then hit enter: ");
-		int fpsIn = tempScanner.nextInt();
-		capture.set(Videoio.CAP_PROP_FPS, fpsIn);
-		System.out.println("Enter the width (int) that you want, then hit enter: ");
-		int widthIn = tempScanner.nextInt();
-		capture.set(Videoio.CAP_PROP_FRAME_WIDTH, widthIn);
-		System.out.println("Enter the height (int) that you want, then hit enter: ");
-		int heightIn = tempScanner.nextInt();
-		capture.set(Videoio.CAP_PROP_FRAME_HEIGHT, heightIn);
+		this.capture.open(deviceIndex);
+		capture.set(Videoio.CAP_PROP_FPS, fps);
+		capture.set(Videoio.CAP_PROP_FRAME_WIDTH, width);
+		capture.set(Videoio.CAP_PROP_FRAME_HEIGHT, height);
 		System.out.println("FPS: " + capture.get(Videoio.CAP_PROP_FPS));
 		System.out.println("Width: " + capture.get(Videoio.CAP_PROP_FRAME_WIDTH));
 		System.out.println("Height: " + capture.get(Videoio.CAP_PROP_FRAME_HEIGHT));
-		tempScanner.close();
 		if (this.capture.isOpened()) {
 			StreamThread streamThread = new StreamThread(capture);
 			Thread myThread = new Thread(streamThread);
 			myThread.start();
+			
+			//setting up the window
+			if (!isHeadless) {
+				this.openWindow();
+			}
+			
 			while (true) {
 					//assign frame (type Mat) with the next image in the capture stream
 					frame = streamThread.getFrame();
@@ -249,7 +136,7 @@ public void videoCaptureTestWithServo() {
 						showResult(frame, (int) center.x, (int) center.y);
 						if (doServoTrack) {
 							System.out.println("Updating Servo...");
-							ServoControl.updateServo(center.x, widthIn);
+							ServoControl.updateServo(center.x, width);
 						}
 					}
 					System.out.println("frame done");
@@ -275,6 +162,87 @@ public void videoCaptureTestWithServo() {
 			System.out.println("uh oh, camera not found or camera cannot be opened");
 		}
 		
+		//the following was the original thing...
+//		if (this.capture.isOpened()) {
+//			Runnable frameGrabber = new Runnable() {
+//				public void run() {
+//					
+//					//assign frame (type Mat) with the next image in the capture stream
+//					frame = getFrame();
+//					
+//					//send the frame to pipeline to process
+//					pipeline.process(frame);
+//					
+//					showResult(frame);
+//					
+//					//give contourArray (ArrayList of MatOfPoint)
+//					//the output of the contour report
+//					contourArray = pipeline.filterContoursOutput();
+//					
+//					//give momentsArray (ArrayList of Moments)
+//					//a size that is the number of the points
+//					//in the contourArray (ArrayList of MatOfPoint)
+//					momentsArray = new ArrayList<Moments>(contourArray.size());
+//					
+//					for (int i = 0; i < contourArray.size(); i++) {
+//						
+//						//take the MatOfPoint at contourArray's index of i
+//						//and change it to a moment by method Imgproc.moments()
+//						//and assign it to the index i of the momentsArray
+//						momentsArray.add(i, Imgproc.moments(contourArray.get(i)));
+//						
+//						//assign moments (Moment) with the moment that
+//						//is at the index i of the momentsArray (the one just previously copied)
+//						moments = momentsArray.get(i);
+//						
+//						//get the point values and print the coordinates out
+//						center = new Point(moments.get_m10() / moments.get_m00(), moments.get_m01() / moments.get_m00());
+//						System.out.println("center x= " + center.x);
+//						System.out.println("center y= " + center.y);
+//						showResult(frame, (int) center.x, (int) center.y);
+//						if (doServoTrack) {
+//							System.out.println("Updating Servo...");
+//							ServoControl.updateServo(center.x, widthIn);
+//						}
+//					}
+//					System.out.println("frame done");
+//					/*if (doServoTrack) {
+//						System.out.println("Updating Servo...");
+//						ServoControl.updateServo(center.x, widthIn);
+//					}*/
+//				}
+//			};
+//			System.out.println("Please type in the fps that you want the thread to run at (int) and hit enter: ");
+//			int millisecondWaitTime = (1000/tempScanner.nextInt());
+//			tempScanner.close();
+//			System.out.println("The thread wait time is: " + millisecondWaitTime);
+//			System.out.println("This thread will run at " + 1/(millisecondWaitTime/1000.0) + " fps.");
+//			this.timer = Executors.newSingleThreadScheduledExecutor();
+//			this.timer.scheduleAtFixedRate(frameGrabber, 0, millisecondWaitTime, TimeUnit.MILLISECONDS);
+//			
+//			/*if (doServoTrack) {
+//				while (true) {
+//					ServoControl.updateServo(center.x, widthIn);
+//					try {
+//						Thread.sleep(2000);
+//					} catch (InterruptedException e) {
+//						// TODO Auto-generated catch block
+//						e.printStackTrace();
+//					}
+//				}
+//			}*/
+//			
+//		} else {
+//			System.out.println("uh oh, camera not found or camera cannot be opened");
+//		}
+		
+	}
+	
+	public void openWindow() {
+		windowViewer.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		windowViewer.setContentPane(streamPanel);
+		windowViewer.pack();
+		windowViewer.setVisible(true);
 	}
 	
 	//reads the image next in the capture stream
