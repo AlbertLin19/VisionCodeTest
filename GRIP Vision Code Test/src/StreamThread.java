@@ -1,6 +1,10 @@
 import org.opencv.core.Mat;
 import org.opencv.videoio.VideoCapture;
-
+/**
+ * This class ensures that the vision code operates on the most recent frame by using threads to clear the capture buffer.
+ * @author Albert Lin
+ *
+ */
 public class StreamThread implements Runnable{
 	
 	VideoCapture capture;

@@ -1,5 +1,9 @@
 
-
+/**
+ * This class is used for operating the servo through raspberry pi GPIO pins.
+ * @author Albert Lin
+ *
+ */
 public class ServoControl {
 	static int n = 18;
 	public ServoControl() {

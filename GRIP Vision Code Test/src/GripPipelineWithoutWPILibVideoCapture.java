@@ -26,40 +26,60 @@ import org.opencv.videoio.Videoio;
 public class GripPipelineWithoutWPILibVideoCapture {
 	
 	//create the VideoCapture object
-	VideoCapture capture = new VideoCapture();
-	
+	VideoCapture capture;
 	//mat used to store the input frames
-	Mat frame = new Mat();
-	
+	Mat frame;
 	//timer object for the thread
 	ScheduledExecutorService timer;
-	
 	//create an object of the class with the pipeline
 	//perhaps change the methods to static so that you do not need to?
-	GripPipelineWithoutWPILibTape pipeline = new GripPipelineWithoutWPILibTape();
-	
+	GripPipelineWithoutWPILibTape pipeline;
 	//moment object used to store the ArrayList of the
 	//contour report published by the pipeline
-	Moments moments = new Moments();
-	
+	Moments moments;
 	//ArrayList object used to store the array of contour points
 	ArrayList<MatOfPoint> contourArray;
-	
 	//ArrayList object used to store the array of moments
 	ArrayList<Moments> momentsArray;
-	
 	//Point object to hold center point
 	Point center;
-	
-	//creating the JFrame window object with title "Viewer"
-	JFrame windowViewer = new JFrame("Viewer");
-	
+	JFrame windowViewer;
 	//create custom StreamPanel object to use for content pane...?
-	StreamPanel streamPanel = new StreamPanel();
+	StreamPanel streamPanel;
+	boolean doServoTrack;
+	int deviceIndex, fps, width, height;
 	
-	//boolean for controlling when to execute servo vision track code
-	boolean doServoTrack = false;
+	public GripPipelineWithoutWPILibVideoCapture() {
+		capture = new VideoCapture();
+		frame = new Mat();
+		pipeline = new GripPipelineWithoutWPILibTape();
+		moments = new Moments();
+		windowViewer = new JFrame("Viewer");
+		streamPanel = new StreamPanel();
+		doServoTrack = false;
+		deviceIndex = 0;
+		fps = 1;
+		width = 1;
+		height = 1;
+	}
 	
+	
+	public void setDoServoTrack(boolean doServoTrackIn) {
+		doServoTrack = doServoTrackIn;
+	}
+	public void setDeviceIndex(int deviceIndexIn) {
+		deviceIndex = deviceIndexIn;
+	}
+	public void setFps(int fpsIn) {
+		fps = fpsIn;
+	}
+	public void setWidth(int widthIn) {
+		width = widthIn;
+	}
+	public void setHeight(int heightIn) {
+		height = heightIn;
+	}
+
 	public void videoCaptureTest() {
 		
 		//setting up the window
