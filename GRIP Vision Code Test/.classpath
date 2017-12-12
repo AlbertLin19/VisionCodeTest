@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/OpenCV-3.3.0">
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
 		<attributes>
-			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="C:/Users/Albert/OpenCV-3.3.0/build/java/x64"/>
+			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/Albert/pi4j-1.2-SNAPSHOT/lib/pi4j-core.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Albert/wpilib/java/current/lib/NetworkTables.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/opencv-3.3.1"/>
+	<classpathentry kind="lib" path="C:/Users/Albert Lin/pi4j-1.1/lib/pi4j-core.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Albert Lin/wpilib/java/current/lib/NetworkTables.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
