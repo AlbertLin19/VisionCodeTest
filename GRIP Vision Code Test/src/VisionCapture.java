@@ -59,8 +59,8 @@ public class VisionCapture {
 		ipAddress = "";
 		deviceIndex = 0;
 		fps = 5;
-		width = 0;
-		height = 0;
+		width = 800;
+		height = 200;
 	}
 	
 	public void setIsHeadless(boolean isHeadlessIn) {
@@ -146,7 +146,7 @@ public class VisionCapture {
 						System.out.println("center x= " + center.x);
 						System.out.println("center y= " + center.y);
 						if (isPublishing) {
-							publisher.publish(center.x, center.y);
+							publisher.publish(width/2-center.x, height/2-center.y);
 						}
 						if (!isHeadless) {
 							showResult(frame, (int) center.x, (int) center.y);
