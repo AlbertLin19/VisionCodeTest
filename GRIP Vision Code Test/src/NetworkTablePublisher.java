@@ -14,7 +14,7 @@ public class NetworkTablePublisher {
 		ipAddress = ipAddressIn;
 		NetworkTable.setClientMode();
 		NetworkTable.setIPAddress(ipAddress);
-		table = NetworkTable.getTable("coordinates");
+		table = NetworkTable.getTable("offset");
 		
 	}
 	
@@ -24,8 +24,8 @@ public class NetworkTablePublisher {
 	}
 	
 	public void publish(double xIn, double yIn) {
-		table.putNumber("x", xIn);
-		table.putNumber("y", yIn);
+		table.putNumber("xOffset", xIn);
+		table.putNumber("yOffset", yIn);
 	}
 
 }

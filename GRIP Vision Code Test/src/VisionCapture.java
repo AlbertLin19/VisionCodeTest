@@ -146,7 +146,7 @@ public class VisionCapture {
 						System.out.println("center x= " + center.x);
 						System.out.println("center y= " + center.y);
 						if (isPublishing) {
-							publisher.publish(width/2-center.x, height/2-center.y);
+							publisher.publish((width/2-center.x)/(width/2), (height/2-center.y)/(height/2));
 						}
 						if (!isHeadless) {
 							showResult(frame, (int) center.x, (int) center.y);
