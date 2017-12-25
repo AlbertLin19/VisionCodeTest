@@ -19,7 +19,7 @@ import org.opencv.videoio.Videoio;
  * @author Albert Lin
  *
  */
-public class GripPipelineWithoutWPILibVideoCapture {
+public class VisionCapture {
 	
 	//create the VideoCapture object
 	VideoCapture capture;
@@ -42,30 +42,35 @@ public class GripPipelineWithoutWPILibVideoCapture {
 	JFrame windowViewer;
 	//create custom StreamPanel object to use for content pane...?
 	StreamPanel streamPanel;
-	boolean doServoTrack, isHeadless;
+	boolean isHeadless, isPublishing;
 	int deviceIndex, fps, width, height;
+	String ipAddress;
+	NetworkTablePublisher publisher;
 	
-	public GripPipelineWithoutWPILibVideoCapture() {
+	public VisionCapture() {
 		capture = new VideoCapture();
 		frame = new Mat();
 		pipeline = new GripPipelineWithoutWPILibTape();
 		moments = new Moments();
 		windowViewer = new JFrame("Viewer");
 		streamPanel = new StreamPanel();
-		doServoTrack = false;
 		isHeadless = true;
+		isPublishing = true;
+		ipAddress = "";
 		deviceIndex = 0;
-		fps = 1;
-		width = 1;
-		height = 1;
+		fps = 5;
+		width = 0;
+		height = 0;
 	}
 	
-	
-	public void setDoServoTrack(boolean doServoTrackIn) {
-		doServoTrack = doServoTrackIn;
-	}
 	public void setIsHeadless(boolean isHeadlessIn) {
 		isHeadless = isHeadlessIn;
+	}
+	public void setIsPublishing(boolean isPublishingIn) {
+		isPublishing = isPublishingIn;
+	}
+	public void setIpAddress(String ipAddressIn) {
+		ipAddress = ipAddressIn;
 	}
 	public void setDeviceIndex(int deviceIndexIn) {
 		deviceIndex = deviceIndexIn;
@@ -81,7 +86,7 @@ public class GripPipelineWithoutWPILibVideoCapture {
 	}
 
 	
-	public void videoCaptureTestWithServo() {
+	public void visionTrack() {
 		
 		this.capture.open(deviceIndex);
 		capture.set(Videoio.CAP_PROP_FPS, fps);
@@ -100,6 +105,11 @@ public class GripPipelineWithoutWPILibVideoCapture {
 				this.openWindow();
 			}
 			
+			//setting up NetworkTable Publisher
+			if (isPublishing) {
+				publisher = new NetworkTablePublisher(ipAddress);
+			}
+			
 			while (true) {
 					//assign frame (type Mat) with the next image in the capture stream
 					frame = streamThread.getFrame();
@@ -107,7 +117,9 @@ public class GripPipelineWithoutWPILibVideoCapture {
 					//send the frame to pipeline to process
 					pipeline.process(frame);
 					
-					showResult(frame);
+					if (!isHeadless) {
+						showResult(frame);
+					}
 					
 					//give contourArray (ArrayList of MatOfPoint)
 					//the output of the contour report
@@ -133,109 +145,20 @@ public class GripPipelineWithoutWPILibVideoCapture {
 						center = new Point(moments.get_m10() / moments.get_m00(), moments.get_m01() / moments.get_m00());
 						System.out.println("center x= " + center.x);
 						System.out.println("center y= " + center.y);
-						showResult(frame, (int) center.x, (int) center.y);
-						if (doServoTrack) {
-							System.out.println("Updating Servo...");
-							ServoControl.updateServo(center.x, width);
+						if (isPublishing) {
+							publisher.publish(center.x, center.y);
 						}
+						if (!isHeadless) {
+							showResult(frame, (int) center.x, (int) center.y);
+						}
+						
 					}
 					System.out.println("frame done");
-					/*if (doServoTrack) {
-						System.out.println("Updating Servo...");
-						ServoControl.updateServo(center.x, widthIn);
-					}*/
-				}
-			
-			/*if (doServoTrack) {
-				while (true) {
-					ServoControl.updateServo(center.x, widthIn);
-					try {
-						Thread.sleep(2000);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-			}*/
+			}
 			
 		} else {
 			System.out.println("uh oh, camera not found or camera cannot be opened");
 		}
-		
-		//the following was the original thing...
-//		if (this.capture.isOpened()) {
-//			Runnable frameGrabber = new Runnable() {
-//				public void run() {
-//					
-//					//assign frame (type Mat) with the next image in the capture stream
-//					frame = getFrame();
-//					
-//					//send the frame to pipeline to process
-//					pipeline.process(frame);
-//					
-//					showResult(frame);
-//					
-//					//give contourArray (ArrayList of MatOfPoint)
-//					//the output of the contour report
-//					contourArray = pipeline.filterContoursOutput();
-//					
-//					//give momentsArray (ArrayList of Moments)
-//					//a size that is the number of the points
-//					//in the contourArray (ArrayList of MatOfPoint)
-//					momentsArray = new ArrayList<Moments>(contourArray.size());
-//					
-//					for (int i = 0; i < contourArray.size(); i++) {
-//						
-//						//take the MatOfPoint at contourArray's index of i
-//						//and change it to a moment by method Imgproc.moments()
-//						//and assign it to the index i of the momentsArray
-//						momentsArray.add(i, Imgproc.moments(contourArray.get(i)));
-//						
-//						//assign moments (Moment) with the moment that
-//						//is at the index i of the momentsArray (the one just previously copied)
-//						moments = momentsArray.get(i);
-//						
-//						//get the point values and print the coordinates out
-//						center = new Point(moments.get_m10() / moments.get_m00(), moments.get_m01() / moments.get_m00());
-//						System.out.println("center x= " + center.x);
-//						System.out.println("center y= " + center.y);
-//						showResult(frame, (int) center.x, (int) center.y);
-//						if (doServoTrack) {
-//							System.out.println("Updating Servo...");
-//							ServoControl.updateServo(center.x, widthIn);
-//						}
-//					}
-//					System.out.println("frame done");
-//					/*if (doServoTrack) {
-//						System.out.println("Updating Servo...");
-//						ServoControl.updateServo(center.x, widthIn);
-//					}*/
-//				}
-//			};
-//			System.out.println("Please type in the fps that you want the thread to run at (int) and hit enter: ");
-//			int millisecondWaitTime = (1000/tempScanner.nextInt());
-//			tempScanner.close();
-//			System.out.println("The thread wait time is: " + millisecondWaitTime);
-//			System.out.println("This thread will run at " + 1/(millisecondWaitTime/1000.0) + " fps.");
-//			this.timer = Executors.newSingleThreadScheduledExecutor();
-//			this.timer.scheduleAtFixedRate(frameGrabber, 0, millisecondWaitTime, TimeUnit.MILLISECONDS);
-//			
-//			/*if (doServoTrack) {
-//				while (true) {
-//					ServoControl.updateServo(center.x, widthIn);
-//					try {
-//						Thread.sleep(2000);
-//					} catch (InterruptedException e) {
-//						// TODO Auto-generated catch block
-//						e.printStackTrace();
-//					}
-//				}
-//			}*/
-//			
-//		} else {
-//			System.out.println("uh oh, camera not found or camera cannot be opened");
-//		}
-		
 	}
 	
 	public void openWindow() {

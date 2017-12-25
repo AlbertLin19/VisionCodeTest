@@ -8,6 +8,6 @@
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/opencv-3.3.1"/>
 	<classpathentry kind="lib" path="C:/Users/Albert Lin/pi4j-1.1/lib/pi4j-core.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Albert Lin/wpilib/java/current/lib/NetworkTables.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Albert Lin/git/VisionCodeTest/NetworkTables-3.1.7-desktop.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

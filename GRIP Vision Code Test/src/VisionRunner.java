@@ -7,21 +7,8 @@ import org.opencv.core.Core;
  * @author Albert Lin
  *
  */
-public class GripPipelineWithoutWPILibRunner {
+public class VisionRunner {
 	public static void main(String[] args) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException, InterruptedException {
-		//load the dll...?
-		//System.out.println(System.getProperty("java.library.path"));
-		
-		//System.setProperty("java.library.path", ".");
-
-	    //Field fieldSysPath = ClassLoader.class.getDeclaredField( "sys_paths" );
-	    //fieldSysPath.setAccessible( true );
-	    //fieldSysPath.set( null, null );
-		
-		//System.setProperty("java.library.path", "C:\\Users\\Albert\\OpenCV-3.3.0\\build\\java\\x64;");
-		
-		//System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-		//String libraryPath = "C:\\Users\\Albert\\OpenCV-3.3.0\\build\\java\\x64";
 		if (System.getProperty("os.name").equals("Windows 10")) {
 			try {
 				System.out.println("This is Windows 10");
@@ -41,14 +28,7 @@ public class GripPipelineWithoutWPILibRunner {
 			try {
 				System.load("/home/pi/Desktop/CodeTest/libopencv_java330.so");
 				System.out.println("Successful Load");
-			} finally {System.out.println("Exiting Load");} /* catch (Exception e2) {
-			String libraryPath = "./";
-			System.setProperty("java.library.path", libraryPath);
-			Field sysPath = ClassLoader.class.getDeclaredField("sys_paths");
-			sysPath.setAccessible(true); sysPath.set(null, null);
-			System.out.println(System.getProperty("java.library.path"));
-			System.loadLibrary("libopencv_java330.so");
-			}*/
+			} finally {System.out.println("Exiting Load");} 
 		} else {
 			System.out.println(System.getProperty("os.name"));	
 			System.out.println("Not Windows 10 or Linux");
@@ -58,42 +38,36 @@ public class GripPipelineWithoutWPILibRunner {
 				System.out.println("Successful Load");
 			} finally {System.out.println("Exiting Load");}
 		}
-		//create a new object to use the video processing
-		//methods within it
-		//perhaps I should change the methods to static
-		//so that I do not have to do this
-		GripPipelineWithoutWPILibVideoCapture stream =
-				new GripPipelineWithoutWPILibVideoCapture();
+		
+		VisionCapture stream =
+				new VisionCapture();
 		
 		//Start the video processing method
 		Scanner tempScanner = new Scanner(System.in);
 		
-		System.out.println("Do you want to control a servo?\nY/N: ");
-		stream.setDoServoTrack(tempScanner.next().equalsIgnoreCase("Y"));
 		System.out.println("Do you want to run in headless mode?\nY/N: ");
 		stream.setIsHeadless(tempScanner.next().equalsIgnoreCase("Y"));
+		System.out.println("Do you want to publish values?\nY/N: ");
+		stream.setIsPublishing(tempScanner.next().equalsIgnoreCase("Y"));
+		if (stream.isPublishing) {
+			System.out.println("Type the ip address of the network table and hit enter: ");
+			stream.setIpAddress(tempScanner.next());
+		}
 		System.out.println("Type the index of the video device (int) and hit enter: ");
 		stream.setDeviceIndex(tempScanner.nextInt());
 		System.out.println("Enter the FPS (int) that you want, then hit enter: ");
 		stream.setFps(tempScanner.nextInt());
-		System.out.println("Enter the width (int) that you want, then hit enter: ");
-		stream.setWidth(tempScanner.nextInt());
-		System.out.println("Enter the height (int) that you want, then hit enter: ");
-		stream.setHeight(tempScanner.nextInt());
-		tempScanner.close();
-		if (stream.doServoTrack) {
-			System.out.println("Testing and initializing servo with the ServoControl class...");
-			ServoControl.testingGpio();
-			stream.videoCaptureTestWithServo();
-		} else {
-			System.out.println("Not running with servo...");
-			stream.videoCaptureTestWithServo();
-			}
 		
-		/*if (stream.doServoTrack) {
-			System.out.println("Testing and initializing servo with the ServoControl class...");
-			ServoControl.testingGpio();
-		}*/
+		if (!stream.isHeadless) {
+			System.out.println("Enter the width (int) that you want, then hit enter: ");
+			stream.setWidth(tempScanner.nextInt());
+			System.out.println("Enter the height (int) that you want, then hit enter: ");
+			stream.setHeight(tempScanner.nextInt());
+		}
+		
+		tempScanner.close();
+		System.out.println("Running vision tracking...");
+		stream.visionTrack();
 		
 	}
 }
