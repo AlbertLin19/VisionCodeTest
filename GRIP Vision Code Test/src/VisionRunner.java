@@ -15,6 +15,7 @@ public class VisionRunner {
 				System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 				System.out.println("Successful Load");
 			} catch (Exception e) {
+				System.out.println("Cannot be loaded by loadlibrary, will try to load through relative path...");
 				String libraryPath = "./";
 				System.setProperty("java.library.path", libraryPath);
 				Field sysPath = ClassLoader.class.getDeclaredField("sys_paths");
@@ -25,10 +26,19 @@ public class VisionRunner {
 			} finally {System.out.println("Exiting Load");}
 		} else if (System.getProperty("os.name").equals("Linux")) {
 			System.out.println("Hopefully, this is Linux.");
+			String path = "/home/pi/Desktop/CodeTest/libopencv_java330.so";
 			try {
-				System.load("/home/pi/Desktop/CodeTest/libopencv_java330.so");
+				System.load(path);
 				System.out.println("Successful Load");
-			} finally {System.out.println("Exiting Load");} 
+			} catch (Exception e2) {
+				System.out.println("Cannot be loaded by absolute path to " + path + ", will try to load through relative path...");
+				String libraryPath = "./";
+				System.setProperty("java.library.path", libraryPath);
+				Field sysPath = ClassLoader.class.getDeclaredField("sys_paths");
+				sysPath.setAccessible(true); sysPath.set(null, null);
+				System.out.println(System.getProperty("java.library.path"));
+				System.loadLibrary("libopencv_java330.so");
+				} finally {System.out.println("Exiting Load");} 
 		} else {
 			System.out.println(System.getProperty("os.name"));	
 			System.out.println("Not Windows 10 or Linux");
