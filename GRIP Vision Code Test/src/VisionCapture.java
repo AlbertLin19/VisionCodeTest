@@ -29,7 +29,7 @@ public class VisionCapture {
 	ScheduledExecutorService timer;
 	//create an object of the class with the pipeline
 	//perhaps change the methods to static so that you do not need to?
-	GripPipelineWithoutWPILibTape pipeline;
+	GripPipelineWithoutWPILibGreen pipeline;
 	//moment object used to store the ArrayList of the
 	//contour report published by the pipeline
 	Moments moments;
@@ -50,13 +50,13 @@ public class VisionCapture {
 	public VisionCapture() {
 		capture = new VideoCapture();
 		frame = new Mat();
-		pipeline = new GripPipelineWithoutWPILibTape();
+		pipeline = new GripPipelineWithoutWPILibGreen();
 		moments = new Moments();
 		windowViewer = new JFrame("Viewer");
 		streamPanel = new StreamPanel();
 		isHeadless = true;
 		isPublishing = true;
-		ipAddress = "";
+		ipAddress = "localhost";
 		deviceIndex = 0;
 		fps = 5;
 		width = 800;
@@ -164,7 +164,7 @@ public class VisionCapture {
 	public void openWindow() {
 		windowViewer.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		windowViewer.setContentPane(streamPanel);
-		windowViewer.pack();
+		windowViewer.setSize((int) capture.get(Videoio.CAP_PROP_FRAME_WIDTH), (int) capture.get(Videoio.CAP_PROP_FRAME_HEIGHT));
 		windowViewer.setVisible(true);
 	}
 	

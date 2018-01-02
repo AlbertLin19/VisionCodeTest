@@ -1,0 +1,8 @@
+Pipeline: GripPipelineWithoutWPILibGreen
+Headless: false
+Publishing: true
+IpAddress: localhost
+DeviceIndex: 0
+FPS: 5
+Width: 640
+Height: 360

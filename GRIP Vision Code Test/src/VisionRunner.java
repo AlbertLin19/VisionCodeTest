@@ -1,5 +1,10 @@
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.StringTokenizer;
 
 import org.opencv.core.Core;
 /**
@@ -52,32 +57,112 @@ public class VisionRunner {
 		VisionCapture stream =
 				new VisionCapture();
 		
-		//Start the video processing method
+		//Loading preferences and starting the video processing method
 		Scanner tempScanner = new Scanner(System.in);
-		
-		System.out.println("Do you want to run in headless mode?\nY/N: ");
-		stream.setIsHeadless(tempScanner.next().equalsIgnoreCase("Y"));
-		System.out.println("Do you want to publish values?\nY/N: ");
-		stream.setIsPublishing(tempScanner.next().equalsIgnoreCase("Y"));
-		if (stream.isPublishing) {
-			System.out.println("Type the ip address of the network table and hit enter: ");
-			stream.setIpAddress(tempScanner.next());
-		}
-		System.out.println("Type the index of the video device (int) and hit enter: ");
-		stream.setDeviceIndex(tempScanner.nextInt());
-		System.out.println("Enter the FPS (int) that you want, then hit enter: ");
-		stream.setFps(tempScanner.nextInt());
-		
-		if (!stream.isHeadless) {
-			System.out.println("Enter the width (int) that you want, then hit enter: ");
-			stream.setWidth(tempScanner.nextInt());
-			System.out.println("Enter the height (int) that you want, then hit enter: ");
-			stream.setHeight(tempScanner.nextInt());
+		System.out.println("Do you want to run off the preference file?\nY/N: ");
+		if (tempScanner.next().equalsIgnoreCase("Y"))
+		{
+		String path = "./Preferences.txt";
+		ArrayList<ArrayList<String>> Preferences = new ArrayList<ArrayList<String>>();
+		try {
+			Preferences = reader(path);
+		} catch (IOException e) {
+			System.out.println("Cannot find path to " + path);
+			e.printStackTrace();
 		}
 		
+		for (ArrayList<String> row : Preferences) {
+			if (row.get(0).equalsIgnoreCase("Pipeline:")) {
+				System.out.println("<Unimplemented> Setting pipeline to " + row.get(1));
+				
+			} else if (row.get(0).equalsIgnoreCase("Headless:")) {
+				System.out.println("Setting headless to " + row.get(1));
+				stream.setIsHeadless(Boolean.parseBoolean(row.get(1)));
+				
+			} else if (row.get(0).equalsIgnoreCase("Publishing:")) {
+				System.out.println("Setting publishing to " + row.get(1));
+				stream.setIsPublishing(Boolean.parseBoolean(row.get(1)));
+				
+			} else if (row.get(0).equalsIgnoreCase("IpAddress:")) {
+				System.out.println("Setting IpAddress to " + row.get(1));
+				stream.setIpAddress(row.get(1));
+				
+			} else if (row.get(0).equalsIgnoreCase("DeviceIndex:")) {
+				System.out.println("Setting DeviceIndex to " + row.get(1));
+				stream.setDeviceIndex(Integer.parseInt(row.get(1)));
+				
+			} else if (row.get(0).equalsIgnoreCase("FPS:")) {
+				System.out.println("Setting FPS to " + row.get(1));
+				stream.setFps(Integer.parseInt(row.get(1)));
+				
+			} else if (row.get(0).equalsIgnoreCase("Width:")) {
+				System.out.println("Setting Width to " + row.get(1));
+				stream.setWidth(Integer.parseInt(row.get(1)));
+				
+			} else if (row.get(0).equalsIgnoreCase("Height:")) {
+				System.out.println("Setting Height to " + row.get(1));
+				stream.setHeight(Integer.parseInt(row.get(1)));
+				
+			}
+		}
+		}
+		else
+		{
+			System.out.println("Do you want to run in headless mode?\nY/N: ");
+			stream.setIsHeadless(tempScanner.next().equalsIgnoreCase("Y"));
+			System.out.println("Do you want to publish values?\nY/N: ");
+			stream.setIsPublishing(tempScanner.next().equalsIgnoreCase("Y"));
+			if (stream.isPublishing) {
+				System.out.println("Type the ip address of the network table and hit enter: ");
+				stream.setIpAddress(tempScanner.next());
+			}
+			System.out.println("Type the index of the video device (int) and hit enter: ");
+			stream.setDeviceIndex(tempScanner.nextInt());
+			System.out.println("Enter the FPS (int) that you want, then hit enter: ");
+			stream.setFps(tempScanner.nextInt());
+			
+			if (!stream.isHeadless) {
+				System.out.println("Enter the width (int) that you want, then hit enter: ");
+				stream.setWidth(tempScanner.nextInt());
+				System.out.println("Enter the height (int) that you want, then hit enter: ");
+				stream.setHeight(tempScanner.nextInt());
+			}
+		}
 		tempScanner.close();
 		System.out.println("Running vision tracking...");
 		stream.visionTrack();
 		
+		
+	}
+	
+	/**
+	 * This method returns a 2D arrayList of the tokens of the file whose path is specified in the call
+	 * @param pathName the string of the path to the file that needs to be read
+	 * @return a 2D arrayList with the tokens of the file
+	 * @throws IOException 
+	 */
+	public static ArrayList<ArrayList<String>> reader(String pathName) throws IOException {
+		ArrayList<ArrayList<String>> inputArray = new ArrayList<ArrayList<String>>();
+	    BufferedReader in = new BufferedReader(new FileReader(pathName));
+	    boolean hasMore = true;
+	    int index = 0;
+	    while (hasMore) {
+	    	String nextLine = null;
+	    	nextLine = in.readLine();
+	    	
+	    	if (nextLine!=null) {
+	    		StringTokenizer stringTokenizer = new StringTokenizer(nextLine);
+	    		inputArray.add(new ArrayList<String>());
+	    		while (stringTokenizer.hasMoreTokens()) {
+	    			inputArray.get(index).add(stringTokenizer.nextToken());
+	    		}
+	    		index++;
+	    	} else {
+	    		hasMore = false;
+	    	}
+	    	
+	    }
+	    in.close();
+	    return inputArray;
 	}
 }
