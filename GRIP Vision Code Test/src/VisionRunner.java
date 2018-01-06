@@ -1,6 +1,9 @@
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -65,10 +68,36 @@ public class VisionRunner {
 		String path = "./Preferences.txt";
 		ArrayList<ArrayList<String>> Preferences = new ArrayList<ArrayList<String>>();
 		try {
+			System.out.println("Trying to read file at " + path);
 			Preferences = reader(path);
 		} catch (IOException e) {
 			System.out.println("Cannot find path to " + path);
-			e.printStackTrace();
+			System.out.println("Creating a default preference file at " + path);
+			try {
+				PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(path)));
+				out.println("Pipeline: GripPipelineWithoutWPILibGreen");
+				out.println("Headless: false");
+				out.println("Publishing: true");
+				out.println("IpAddress: localhost");
+				out.println("DeviceIndex: 0");
+				out.println("FPS: 5");
+				out.println("Width: 640");
+				out.println("Height: 360");
+				out.close();
+				try {
+					System.out.println("Trying to read file at " + path);
+					Preferences = reader(path);
+				} catch (IOException e1) {
+					System.out.println("Cannot find path to " + path);
+					System.out.println("All settings will be the defaults hardcoded into the program.");
+					e1.printStackTrace();
+				}
+			} catch (IOException e1) {
+				System.out.println("Cannot create output file...");
+				System.out.println("All settings will be the defaults hardcoded into the program.");
+				e1.printStackTrace();
+			}
+		    
 		}
 		
 		for (ArrayList<String> row : Preferences) {
