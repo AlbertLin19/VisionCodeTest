@@ -154,17 +154,20 @@ public class VisionCapture {
 						
 						//get the point values and print the coordinates out
 						center = new Point(moments.get_m10() / moments.get_m00(), moments.get_m01() / moments.get_m00());
-						System.out.println("center x= " + center.x);
-						System.out.println("center y= " + center.y);
 						if (isPublishing) {
+							//publish the offset from the center on a scale of -1.0 to 1.0
 							publisher.publish((width/2-center.x)/(width/2), (height/2-center.y)/(height/2));
 						}
 						if (!isHeadless) {
+							System.out.println("center x= " + center.x);
+							System.out.println("center y= " + center.y);
 							showResult(frame, (int) center.x, (int) center.y);
 						}
 						
 					}
-					System.out.println("frame done");
+					if (!isHeadless) {
+						System.out.println("frame done");
+					}
 			}
 			
 		} else {
