@@ -10,7 +10,7 @@ import org.opencv.imgproc.*;
 *
 * @author GRIP
 */
-public class GripPipelineWithoutWPILibGreen {
+public class GripPipelineWithoutWPILibGreen implements Pipeline {
 
 	//Outputs
 	private Mat blurOutput = new Mat();

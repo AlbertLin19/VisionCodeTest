@@ -29,7 +29,7 @@ public class VisionCapture {
 	ScheduledExecutorService timer;
 	//create an object of the class with the pipeline
 	//perhaps change the methods to static so that you do not need to?
-	GripPipelineWithoutWPILibGreen pipeline;
+	Pipeline pipeline;
 	//moment object used to store the ArrayList of the
 	//contour report published by the pipeline
 	Moments moments;
@@ -50,17 +50,28 @@ public class VisionCapture {
 	public VisionCapture() {
 		capture = new VideoCapture();
 		frame = new Mat();
-		pipeline = new GripPipelineWithoutWPILibGreen();
+		pipeline = new GripPipelineWithoutWPILibTape();
 		moments = new Moments();
 		windowViewer = new JFrame("Viewer");
 		streamPanel = new StreamPanel();
 		isHeadless = true;
 		isPublishing = true;
-		ipAddress = "localhost";
+		ipAddress = "10.65.60.2";
 		deviceIndex = 0;
 		fps = 5;
-		width = 800;
-		height = 200;
+		width = 640;
+		height = 360;
+	}
+	
+	public void setPipeline(String pipelineClassName) {
+		if (pipelineClassName.equalsIgnoreCase("GripPipelineWithoutWPILibTape")) {
+			pipeline = new GripPipelineWithoutWPILibTape();
+		} else if (pipelineClassName.equalsIgnoreCase("GripPipelineWithoutWPILibGreen")) {
+			pipeline = new GripPipelineWithoutWPILibGreen();
+		} else {
+			System.out.println("No match found for name in code. Either add the new pipeline to the setPipeline method or change the settings to an appropriate name!");
+			System.out.println("The pipeline to be used will remain unchanged.");
+		}
 	}
 	
 	public void setIsHeadless(boolean isHeadlessIn) {

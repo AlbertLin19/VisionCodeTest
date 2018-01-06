@@ -75,10 +75,10 @@ public class VisionRunner {
 			System.out.println("Creating a default preference file at " + path);
 			try {
 				PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(path)));
-				out.println("Pipeline: GripPipelineWithoutWPILibGreen");
-				out.println("Headless: false");
+				out.println("Pipeline: GripPipelineWithoutWPILibTape");
+				out.println("Headless: true");
 				out.println("Publishing: true");
-				out.println("IpAddress: localhost");
+				out.println("IpAddress: 10.65.60.2");
 				out.println("DeviceIndex: 0");
 				out.println("FPS: 5");
 				out.println("Width: 640");
@@ -102,7 +102,8 @@ public class VisionRunner {
 		
 		for (ArrayList<String> row : Preferences) {
 			if (row.get(0).equalsIgnoreCase("Pipeline:")) {
-				System.out.println("<Unimplemented> Setting pipeline to " + row.get(1));
+				System.out.println("Setting pipeline to " + row.get(1));
+				stream.setPipeline(row.get(1));
 				
 			} else if (row.get(0).equalsIgnoreCase("Headless:")) {
 				System.out.println("Setting headless to " + row.get(1));
@@ -137,24 +138,41 @@ public class VisionRunner {
 		}
 		else
 		{
+			System.out.println("Type the name of the pipeline you wish to use: ");
+			stream.setPipeline(tempScanner.next().trim());
+			tempScanner.nextLine();
+			
 			System.out.println("Do you want to run in headless mode?\nY/N: ");
-			stream.setIsHeadless(tempScanner.next().equalsIgnoreCase("Y"));
+			stream.setIsHeadless(tempScanner.next().trim().equalsIgnoreCase("Y"));
+			tempScanner.nextLine();
+			
 			System.out.println("Do you want to publish values?\nY/N: ");
-			stream.setIsPublishing(tempScanner.next().equalsIgnoreCase("Y"));
+			stream.setIsPublishing(tempScanner.next().trim().equalsIgnoreCase("Y"));
+			tempScanner.nextLine();
+			
 			if (stream.isPublishing) {
 				System.out.println("Type the ip address of the network table and hit enter: ");
-				stream.setIpAddress(tempScanner.next());
+				stream.setIpAddress(tempScanner.next().trim());
+				tempScanner.nextLine();
 			}
+			
 			System.out.println("Type the index of the video device (int) and hit enter: ");
 			stream.setDeviceIndex(tempScanner.nextInt());
+			tempScanner.nextLine();
+			
 			System.out.println("Enter the FPS (int) that you want, then hit enter: ");
 			stream.setFps(tempScanner.nextInt());
+			tempScanner.nextLine();
 			
 			if (!stream.isHeadless) {
 				System.out.println("Enter the width (int) that you want, then hit enter: ");
 				stream.setWidth(tempScanner.nextInt());
+				tempScanner.nextLine();
+				
 				System.out.println("Enter the height (int) that you want, then hit enter: ");
 				stream.setHeight(tempScanner.nextInt());
+				tempScanner.nextLine();
+				
 			}
 		}
 		tempScanner.close();
