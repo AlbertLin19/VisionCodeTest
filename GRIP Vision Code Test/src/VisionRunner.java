@@ -34,7 +34,7 @@ public class VisionRunner {
 			} finally {System.out.println("Exiting Load");}
 		} else if (System.getProperty("os.name").equals("Linux")) {
 			System.out.println("Hopefully, this is Linux.");
-			String path = "/home/pi/Desktop/CodeTest/libopencv_java330.so";
+			String path = "/home/pi/Desktop/Libraries/libopencv_java330.so";
 			try {
 				System.load(path);
 				System.out.println("Successful Load");
