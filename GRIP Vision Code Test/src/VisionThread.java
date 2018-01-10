@@ -19,44 +19,53 @@ import org.opencv.videoio.Videoio;
  * @author Albert Lin
  *
  */
-public class VisionCapture {
+public class VisionThread implements Runnable {
 	
 	//create the VideoCapture object
-	VideoCapture capture;
+	private VideoCapture capture;
 	//mat used to store the input frames
-	Mat frame;
+	private Mat frame;
 	//timer object for the thread
-	ScheduledExecutorService timer;
+	private ScheduledExecutorService timer;
 	//create an object of the class with the pipeline
 	//perhaps change the methods to static so that you do not need to?
-	Pipeline pipeline;
+	private Pipeline pipeline;
 	//moment object used to store the ArrayList of the
 	//contour report published by the pipeline
-	Moments moments;
+	private Moments moments;
 	//ArrayList object used to store the array of contour points
-	ArrayList<MatOfPoint> contourArray;
+	private ArrayList<MatOfPoint> contourArray;
 	//ArrayList object used to store the array of moments
-	ArrayList<Moments> momentsArray;
+	private ArrayList<Moments> momentsArray;
 	//Point object to hold center point
-	Point center;
-	JFrame windowViewer;
+	private Point center;
+	private JFrame windowViewer;
 	//create custom StreamPanel object to use for content pane...?
-	StreamPanel streamPanel;
-	boolean isHeadless, isPublishing;
-	int deviceIndex, fps, width, height;
-	String ipAddress;
-	NetworkTablePublisher publisher;
+	private StreamPanel streamPanel;
 	
-	public VisionCapture() {
+	boolean isHeadless, isPublishing;
+	
+	
+	private int deviceIndex, fps, width, height;
+	
+	
+	private static String ipAddress;
+	private static NetworkTablePublisher publisher;
+	
+	static {
+		ipAddress = "10.65.60.2";
+		publisher = new NetworkTablePublisher(ipAddress);
+	}
+	
+	public VisionThread() {
 		capture = new VideoCapture();
 		frame = new Mat();
-		pipeline = new GripPipelineWithoutWPILibTape();
+		pipeline = new GripPipelineWithoutWPILibGreen();
 		moments = new Moments();
 		windowViewer = new JFrame("Viewer");
 		streamPanel = new StreamPanel();
 		isHeadless = true;
 		isPublishing = true;
-		ipAddress = "10.65.60.2";
 		deviceIndex = 0;
 		fps = 5;
 		width = 640;
@@ -68,6 +77,8 @@ public class VisionCapture {
 			pipeline = new GripPipelineWithoutWPILibTape();
 		} else if (pipelineClassName.equalsIgnoreCase("GripPipelineWithoutWPILibGreen")) {
 			pipeline = new GripPipelineWithoutWPILibGreen();
+		} else if (pipelineClassName.equalsIgnoreCase("GripPipelineWithoutWPILibYellowAndPurple")) {
+			pipeline = new GripPipelineWithoutWPILibYellowAndPurple();
 		} else {
 			System.out.println("No match found for name in code. Either add the new pipeline to the setPipeline method or change the settings to an appropriate name!");
 			System.out.println("The pipeline to be used will remain unchanged.");
@@ -80,8 +91,9 @@ public class VisionCapture {
 	public void setIsPublishing(boolean isPublishingIn) {
 		isPublishing = isPublishingIn;
 	}
-	public void setIpAddress(String ipAddressIn) {
+	public static void setIpAddress(String ipAddressIn) {
 		ipAddress = ipAddressIn;
+		publisher.setIpAddress(ipAddressIn);
 	}
 	public void setDeviceIndex(int deviceIndexIn) {
 		deviceIndex = deviceIndexIn;
@@ -97,7 +109,7 @@ public class VisionCapture {
 	}
 
 	
-	public void visionTrack() {
+	public void run() {
 		
 		this.capture.open(deviceIndex);
 		capture.set(Videoio.CAP_PROP_FPS, fps);
@@ -114,11 +126,6 @@ public class VisionCapture {
 			//setting up the window
 			if (!isHeadless) {
 				this.openWindow();
-			}
-			
-			//setting up NetworkTable Publisher
-			if (isPublishing) {
-				publisher = new NetworkTablePublisher(ipAddress);
 			}
 			
 			while (true) {

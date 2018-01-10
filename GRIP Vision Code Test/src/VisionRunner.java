@@ -17,6 +17,8 @@ import org.opencv.core.Core;
  */
 public class VisionRunner {
 	public static void main(String[] args) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException, InterruptedException {
+		Scanner tempScanner = new Scanner(System.in);
+		
 		if (System.getProperty("os.name").equals("Windows 10")) {
 			try {
 				System.out.println("This is Windows 10");
@@ -34,7 +36,8 @@ public class VisionRunner {
 			} finally {System.out.println("Exiting Load");}
 		} else if (System.getProperty("os.name").equals("Linux")) {
 			System.out.println("Hopefully, this is Linux.");
-			String path = "/home/pi/Desktop/Libraries/libopencv_java330.so";
+			System.out.println("Type in the absolute path to the OpenCV library and hit the enter key: ");
+			String path = tempScanner.nextLine();
 			try {
 				System.load(path);
 				System.out.println("Successful Load");
@@ -57,14 +60,9 @@ public class VisionRunner {
 			} finally {System.out.println("Exiting Load");}
 		}
 		
-		VisionCapture stream =
-				new VisionCapture();
+		tempScanner.close();
 		
 		//Loading preferences and starting the video processing method
-		Scanner tempScanner = new Scanner(System.in);
-		System.out.println("Do you want to run off the preference file?\nY/N: ");
-		if (tempScanner.next().equalsIgnoreCase("Y"))
-		{
 		String path = "./Preferences.txt";
 		ArrayList<ArrayList<String>> Preferences = new ArrayList<ArrayList<String>>();
 		try {
@@ -100,84 +98,63 @@ public class VisionRunner {
 		    
 		}
 		
+		ArrayList<VisionThread> visionThreads = new ArrayList<VisionThread>();
+		
 		for (ArrayList<String> row : Preferences) {
 			if (row.get(0).equalsIgnoreCase("Pipeline:")) {
-				System.out.println("Setting pipeline to " + row.get(1));
-				stream.setPipeline(row.get(1));
+				for (int i = 1; i < row.size(); i++) {
+					System.out.println("Creating a thread for " + row.get(i));
+					visionThreads.add(new VisionThread());
+				}
 				
-			} else if (row.get(0).equalsIgnoreCase("Headless:")) {
-				System.out.println("Setting headless to " + row.get(1));
-				stream.setIsHeadless(Boolean.parseBoolean(row.get(1)));
-				
-			} else if (row.get(0).equalsIgnoreCase("Publishing:")) {
-				System.out.println("Setting publishing to " + row.get(1));
-				stream.setIsPublishing(Boolean.parseBoolean(row.get(1)));
 				
 			} else if (row.get(0).equalsIgnoreCase("IpAddress:")) {
 				System.out.println("Setting IpAddress to " + row.get(1));
-				stream.setIpAddress(row.get(1));
+					VisionThread.setIpAddress(row.get(1));
+				
+			} else if (row.get(0).equalsIgnoreCase("Headless:")) {
+				for (int i = 1; i < row.size(); i++) {
+					System.out.println("Setting headless to " + row.get(i) + " for thread " + i);
+					visionThreads.get(i-1).setIsHeadless(Boolean.parseBoolean(row.get(i)));
+				}
+				
+			} else if (row.get(0).equalsIgnoreCase("Publishing:")) {
+				for (int i = 1; i < row.size(); i++) {
+					System.out.println("Setting publishing to " + row.get(i) + " for thread " + i);
+					visionThreads.get(i-1).setIsPublishing(Boolean.parseBoolean(row.get(i)));
+				}
 				
 			} else if (row.get(0).equalsIgnoreCase("DeviceIndex:")) {
-				System.out.println("Setting DeviceIndex to " + row.get(1));
-				stream.setDeviceIndex(Integer.parseInt(row.get(1)));
-				
+				for (int i = 1; i < row.size(); i++) {
+					System.out.println("Setting DeviceIndex to " + row.get(i) + " for thread " + i);
+					visionThreads.get(i-1).setDeviceIndex(Integer.parseInt(row.get(i)));
+				}
+					
 			} else if (row.get(0).equalsIgnoreCase("FPS:")) {
-				System.out.println("Setting FPS to " + row.get(1));
-				stream.setFps(Integer.parseInt(row.get(1)));
-				
+				for (int i = 1; i < row.size(); i++) {
+					System.out.println("Setting FPS to " + row.get(i) + " for thread " + i);
+					visionThreads.get(i-1).setFps(Integer.parseInt(row.get(i)));
+				}
+					
 			} else if (row.get(0).equalsIgnoreCase("Width:")) {
-				System.out.println("Setting Width to " + row.get(1));
-				stream.setWidth(Integer.parseInt(row.get(1)));
+				for (int i = 1; i < row.size(); i++) {
+					System.out.println("Setting Width to " + row.get(i) + " for thread " + i);
+					visionThreads.get(i-1).setWidth(Integer.parseInt(row.get(i)));
+				}
 				
 			} else if (row.get(0).equalsIgnoreCase("Height:")) {
-				System.out.println("Setting Height to " + row.get(1));
-				stream.setHeight(Integer.parseInt(row.get(1)));
+				for (int i = 1; i < row.size(); i++) {
+					System.out.println("Setting Height to " + row.get(i) + " for thread " + i);
+					visionThreads.get(i-1).setHeight(Integer.parseInt(row.get(i)));
+				}
 				
 			}
 		}
-		}
-		else
-		{
-			System.out.println("Type the name of the pipeline you wish to use: ");
-			stream.setPipeline(tempScanner.next().trim());
-			tempScanner.nextLine();
-			
-			System.out.println("Do you want to run in headless mode?\nY/N: ");
-			stream.setIsHeadless(tempScanner.next().trim().equalsIgnoreCase("Y"));
-			tempScanner.nextLine();
-			
-			System.out.println("Do you want to publish values?\nY/N: ");
-			stream.setIsPublishing(tempScanner.next().trim().equalsIgnoreCase("Y"));
-			tempScanner.nextLine();
-			
-			if (stream.isPublishing) {
-				System.out.println("Type the ip address of the network table and hit enter: ");
-				stream.setIpAddress(tempScanner.next().trim());
-				tempScanner.nextLine();
-			}
-			
-			System.out.println("Type the index of the video device (int) and hit enter: ");
-			stream.setDeviceIndex(tempScanner.nextInt());
-			tempScanner.nextLine();
-			
-			System.out.println("Enter the FPS (int) that you want, then hit enter: ");
-			stream.setFps(tempScanner.nextInt());
-			tempScanner.nextLine();
-			
-			if (!stream.isHeadless) {
-				System.out.println("Enter the width (int) that you want, then hit enter: ");
-				stream.setWidth(tempScanner.nextInt());
-				tempScanner.nextLine();
-				
-				System.out.println("Enter the height (int) that you want, then hit enter: ");
-				stream.setHeight(tempScanner.nextInt());
-				tempScanner.nextLine();
-				
-			}
-		}
-		tempScanner.close();
 		System.out.println("Running vision tracking...");
-		stream.visionTrack();
+		for (VisionThread thread : visionThreads) {
+			Thread myThread = new Thread(thread);
+			myThread.start();
+		}
 		
 		
 	}
