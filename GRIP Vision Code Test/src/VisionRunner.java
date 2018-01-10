@@ -73,10 +73,10 @@ public class VisionRunner {
 			System.out.println("Creating a default preference file at " + path);
 			try {
 				PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(path)));
+				out.println("IpAddress: 10.65.60.2");
 				out.println("Pipeline: GripPipelineWithoutWPILibTape");
 				out.println("Headless: true");
 				out.println("Publishing: true");
-				out.println("IpAddress: 10.65.60.2");
 				out.println("DeviceIndex: 0");
 				out.println("FPS: 5");
 				out.println("Width: 640");
@@ -113,39 +113,39 @@ public class VisionRunner {
 					VisionThread.setIpAddress(row.get(1));
 				
 			} else if (row.get(0).equalsIgnoreCase("Headless:")) {
-				for (int i = 1; i < row.size(); i++) {
-					System.out.println("Setting headless to " + row.get(i) + " for thread " + i);
-					visionThreads.get(i-1).setIsHeadless(Boolean.parseBoolean(row.get(i)));
+				for (int i = 0; i < visionThreads.size(); i++) {
+					System.out.println("Setting headless to " + row.get(i+1) + " for thread " + (i+1));
+					visionThreads.get(i).setIsHeadless(Boolean.parseBoolean(row.get(i+1)));
 				}
 				
 			} else if (row.get(0).equalsIgnoreCase("Publishing:")) {
-				for (int i = 1; i < row.size(); i++) {
-					System.out.println("Setting publishing to " + row.get(i) + " for thread " + i);
-					visionThreads.get(i-1).setIsPublishing(Boolean.parseBoolean(row.get(i)));
+				for (int i = 0; i < visionThreads.size(); i++) {
+					System.out.println("Setting publishing to " + row.get(i+1) + " for thread " + (i+1));
+					visionThreads.get(i).setIsPublishing(Boolean.parseBoolean(row.get(i+1)));
 				}
 				
 			} else if (row.get(0).equalsIgnoreCase("DeviceIndex:")) {
-				for (int i = 1; i < row.size(); i++) {
-					System.out.println("Setting DeviceIndex to " + row.get(i) + " for thread " + i);
-					visionThreads.get(i-1).setDeviceIndex(Integer.parseInt(row.get(i)));
+				for (int i = 0; i < visionThreads.size(); i++) {
+					System.out.println("Setting DeviceIndex to " + row.get(i+1) + " for thread " + (i+1));
+					visionThreads.get(i).setDeviceIndex(Integer.parseInt(row.get(i+1)));
 				}
 					
 			} else if (row.get(0).equalsIgnoreCase("FPS:")) {
-				for (int i = 1; i < row.size(); i++) {
-					System.out.println("Setting FPS to " + row.get(i) + " for thread " + i);
-					visionThreads.get(i-1).setFps(Integer.parseInt(row.get(i)));
+				for (int i = 0; i < visionThreads.size(); i++) {
+					System.out.println("Setting FPS to " + row.get(i+1) + " for thread " + (i+1));
+					visionThreads.get(i).setFps(Integer.parseInt(row.get(i+1)));
 				}
 					
 			} else if (row.get(0).equalsIgnoreCase("Width:")) {
-				for (int i = 1; i < row.size(); i++) {
-					System.out.println("Setting Width to " + row.get(i) + " for thread " + i);
-					visionThreads.get(i-1).setWidth(Integer.parseInt(row.get(i)));
+				for (int i = 0; i < visionThreads.size(); i++) {
+					System.out.println("Setting Width to " + row.get(i+1) + " for thread " + (i+1));
+					visionThreads.get(i).setWidth(Integer.parseInt(row.get(i+1)));
 				}
 				
 			} else if (row.get(0).equalsIgnoreCase("Height:")) {
-				for (int i = 1; i < row.size(); i++) {
-					System.out.println("Setting Height to " + row.get(i) + " for thread " + i);
-					visionThreads.get(i-1).setHeight(Integer.parseInt(row.get(i)));
+				for (int i = 0; i < visionThreads.size(); i++) {
+					System.out.println("Setting Height to " + row.get(i+1) + " for thread " + (i+1));
+					visionThreads.get(i).setHeight(Integer.parseInt(row.get(i+1)));
 				}
 				
 			}

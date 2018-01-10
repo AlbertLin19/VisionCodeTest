@@ -1,8 +1,8 @@
-Pipeline: GripPipelineWithoutWPILibGreen
-Headless: false
-Publishing: true
 IpAddress: 10.65.60.2
-DeviceIndex: 0
-FPS: 5
-Width: 640
-Height: 360
+Pipeline: GripPipelineWithoutWPILibGreen
+Headless: false false false
+Publishing: true true true
+DeviceIndex: 0 1 2
+FPS: 5 5 5
+Width: 640 640 640
+Height: 360 360 360
